@@ -1,6 +1,9 @@
 # Stage 1: Build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
+
+# Copy global.json first (if it exists) to set SDK version
+COPY SWP_EVBatteryChangeStation_BE/global.json* ./
 
 # Copy all .csproj files (from root context, copy to flat structure)
 COPY SWP_EVBatteryChangeStation_BE/EV_BatteryChangeStation/EV_BatteryChangeStation.csproj EV_BatteryChangeStation/
