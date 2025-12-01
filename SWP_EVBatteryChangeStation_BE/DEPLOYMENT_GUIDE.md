@@ -168,33 +168,62 @@ Use the `docker-compose.yml` for local development only.
    - Select your repository
 
 3. **Configure build settings**:
-   - Railway should auto-detect the Dockerfile
+   - The `railway.json` file is already configured to use Docker
+   - Railway will automatically detect and use the Dockerfile
    - If you see "Error creating build plan with Railpack":
-     - Go to your service settings
-     - Under "Build" section, select "Dockerfile" as the build method
-     - Or ensure `railway.json` is in your repo root (already created)
+     - Ensure `railway.json` exists in the root directory with `"builder": "DOCKERFILE"`
+     - Or manually set build method to "Dockerfile" in Railway dashboard → Settings → Build
 
 4. **Add environment variables** in Railway dashboard:
    - Go to your service → Variables tab
-   - Add all required environment variables (see Environment Configuration section)
+   - Add all required environment variables:
+     ```
+     ConnectionStrings__DefaultConnection=server=YOUR_DB_SERVER;database=EVBatterySwap;uid=YOUR_USER;pwd=YOUR_PASSWORD;TrustServerCertificate=True
+     ASPNETCORE_ENVIRONMENT=Production
+     ASPNETCORE_URLS=http://+:${PORT}
+     JwtConfig__Key=your-jwt-key
+     JwtConfig__Issuer=App
+     JwtConfig__Audience=App
+     JwtConfig__ExpireMinutes=30
+     EmailSettings__Email=your-email@gmail.com
+     EmailSettings__AppPassword=your-app-password
+     Vnpay__TmnCode=YOUR_TMN_CODE
+     Vnpay__HashSecret=YOUR_HASH_SECRET
+     Vnpay__BaseUrl=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+     Vnpay__ReturnUrl=https://your-railway-domain.railway.app/api/VNPay/vnpay-return
+     Vnpay__Command=pay
+     Vnpay__CurrCode=VND
+     Vnpay__Version=2.1.0
+     Vnpay__Locale=vn
+     ```
+   - **Important**: Railway automatically sets the `PORT` environment variable. Use `ASPNETCORE_URLS=http://+:${PORT}` to make your app listen on Railway's assigned port.
 
-5. **Configure port** (if needed):
-   - Railway automatically detects port 80 from Dockerfile
-   - If you need to change it, add `PORT` environment variable
-
-6. **Add database**:
+5. **Add database**:
    - Railway offers PostgreSQL and MySQL
    - For SQL Server, use external service (Azure SQL, AWS RDS, etc.)
    - Add connection string to environment variables
 
-7. **Deploy**:
-   - Railway auto-deploys on git push
+6. **Deploy**:
+   - Railway auto-deploys on git push to the connected branch
    - Or use CLI: `railway up`
+   - Check deployment logs in the Railway dashboard
 
 **Troubleshooting Railway:**
-- If build fails with "Railpack" error: Ensure `railway.json` exists or manually set build method to Dockerfile in dashboard
-- If port issues: Railway uses port 80 by default, ensure your Dockerfile exposes port 80
-- Check build logs in Railway dashboard for specific errors
+- **"Error creating build plan with Railpack"**: 
+  - Ensure `railway.json` exists with `"builder": "DOCKERFILE"` (already fixed)
+  - Or manually set build method to "Dockerfile" in dashboard → Settings → Build
+- **Port issues**: 
+  - Railway automatically sets `PORT` env var
+  - Set `ASPNETCORE_URLS=http://+:${PORT}` in environment variables
+  - Your Dockerfile should expose port 80 (already configured)
+- **Build fails**: 
+  - Check build logs in Railway dashboard
+  - Ensure all .csproj files are in the correct locations
+  - Verify Dockerfile syntax is correct
+- **App won't start**: 
+  - Check runtime logs in Railway dashboard
+  - Verify all environment variables are set correctly
+  - Ensure database connection string is valid and accessible from Railway
 
 ### 2. Render Deployment
 
