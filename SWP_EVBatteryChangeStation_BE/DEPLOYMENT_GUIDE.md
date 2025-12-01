@@ -156,25 +156,45 @@ Use the `docker-compose.yml` for local development only.
 
 ### 1. Railway Deployment
 
-1. **Install Railway CLI**:
+1. **Install Railway CLI** (optional):
    ```bash
    npm i -g @railway/cli
    railway login
    ```
 
-2. **Initialize project**:
-   ```bash
-   railway init
-   ```
+2. **Connect your GitHub repository**:
+   - Go to [railway.app](https://railway.app)
+   - Click "New Project" → "Deploy from GitHub repo"
+   - Select your repository
 
-3. **Add environment variables** in Railway dashboard
+3. **Configure build settings**:
+   - Railway should auto-detect the Dockerfile
+   - If you see "Error creating build plan with Railpack":
+     - Go to your service settings
+     - Under "Build" section, select "Dockerfile" as the build method
+     - Or ensure `railway.json` is in your repo root (already created)
 
-4. **Deploy**:
-   ```bash
-   railway up
-   ```
+4. **Add environment variables** in Railway dashboard:
+   - Go to your service → Variables tab
+   - Add all required environment variables (see Environment Configuration section)
 
-5. **Add database** (PostgreSQL or MySQL available, or use external SQL Server)
+5. **Configure port** (if needed):
+   - Railway automatically detects port 80 from Dockerfile
+   - If you need to change it, add `PORT` environment variable
+
+6. **Add database**:
+   - Railway offers PostgreSQL and MySQL
+   - For SQL Server, use external service (Azure SQL, AWS RDS, etc.)
+   - Add connection string to environment variables
+
+7. **Deploy**:
+   - Railway auto-deploys on git push
+   - Or use CLI: `railway up`
+
+**Troubleshooting Railway:**
+- If build fails with "Railpack" error: Ensure `railway.json` exists or manually set build method to Dockerfile in dashboard
+- If port issues: Railway uses port 80 by default, ensure your Dockerfile exposes port 80
+- Check build logs in Railway dashboard for specific errors
 
 ### 2. Render Deployment
 
